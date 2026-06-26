@@ -578,6 +578,8 @@
 
       const getMaxScroll = () => Math.max(content.scrollWidth - scroller.clientWidth, 0);
       const clampScroll = (value) => Math.min(Math.max(value, 0), getMaxScroll());
+      const getMaxWindowScroll = () => Math.max(document.documentElement.scrollHeight - window.innerHeight, 0);
+      const clampWindowScroll = (value) => Math.min(Math.max(value, 0), getMaxWindowScroll());
 
       const renderPosition = (nextX) => {
         positionX = clampScroll(nextX);
@@ -587,9 +589,7 @@
 
       const updateTableControls = () => {
         const maxScroll = getMaxScroll();
-        const needsScroll = maxScroll > 0;
-
-        controls.hidden = !needsScroll;
+        controls.hidden = maxScroll <= 0;
         slider.max = String(Math.max(Math.round(maxScroll), 1));
         renderPosition(positionX);
       };
@@ -598,115 +598,94 @@
         renderPosition(Number(slider.value));
       });
 
-      let touchStartX = 0;
-      let touchStartY = 0;
-      let touchStartPosition = 0;
-      let touchAxis = null;
-      let touchActive = false;
+      let pointerId = null;
+      let startX = 0;
+      let startY = 0;
+      let startPosition = 0;
+      let startWindowY = 0;
+      let axis = null;
+      let active = false;
 
-      const resetTouchState = () => {
-        touchActive = false;
-        touchAxis = null;
+      const resetState = () => {
+        pointerId = null;
+        active = false;
+        axis = null;
         scroller.classList.remove("is-dragging");
       };
 
-      scroller.addEventListener(
-        "touchstart",
-        (event) => {
-          if (event.touches.length !== 1 || getMaxScroll() <= 0) {
-            return;
-          }
-
-          const touch = event.touches[0];
-          touchStartX = touch.clientX;
-          touchStartY = touch.clientY;
-          touchStartPosition = positionX;
-          touchAxis = null;
-          touchActive = true;
-        },
-        { passive: true, capture: true }
-      );
-
-      scroller.addEventListener(
-        "touchmove",
-        (event) => {
-          if (!touchActive || event.touches.length !== 1) {
-            return;
-          }
-
-          const touch = event.touches[0];
-          const deltaX = touch.clientX - touchStartX;
-          const deltaY = touch.clientY - touchStartY;
-          const absX = Math.abs(deltaX);
-          const absY = Math.abs(deltaY);
-
-          if (!touchAxis) {
-            if (Math.max(absX, absY) < 4) {
-              return;
-            }
-
-            touchAxis = absX > absY * 0.75 ? "x" : "y";
-
-            if (touchAxis === "x") {
-              scroller.classList.add("is-dragging");
-            }
-          }
-
-          if (touchAxis !== "x") {
-            return;
-          }
-
-          if (event.cancelable) {
-            event.preventDefault();
-          }
-          event.stopPropagation();
-          renderPosition(touchStartPosition - deltaX);
-        },
-        { passive: false, capture: true }
-      );
-
-      scroller.addEventListener("touchend", resetTouchState, { capture: true });
-      scroller.addEventListener("touchcancel", resetTouchState, { capture: true });
-
-      let mousePointerId = null;
-      let mouseStartX = 0;
-      let mouseStartPosition = 0;
-      let mouseDragging = false;
-
-      scroller.addEventListener("pointerdown", (event) => {
-        if (event.pointerType !== "mouse" || event.button !== 0 || getMaxScroll() <= 0) {
+      const beginGesture = (event) => {
+        if (event.target.closest(".table-controls")) {
+          return;
+        }
+        if (event.pointerType === "mouse" && event.button !== 0) {
+          return;
+        }
+        if (getMaxScroll() <= 0) {
           return;
         }
 
-        mousePointerId = event.pointerId;
-        mouseStartX = event.clientX;
-        mouseStartPosition = positionX;
-        mouseDragging = true;
+        pointerId = event.pointerId;
+        startX = event.clientX;
+        startY = event.clientY;
+        startPosition = positionX;
+        startWindowY = window.scrollY;
+        axis = null;
+        active = true;
         scroller.classList.add("is-dragging");
 
         if (scroller.setPointerCapture) {
-          scroller.setPointerCapture(mousePointerId);
+          scroller.setPointerCapture(pointerId);
         }
-      });
+      };
 
-      scroller.addEventListener("pointermove", (event) => {
-        if (!mouseDragging || event.pointerId !== mousePointerId) {
+      const moveGesture = (event) => {
+        if (!active || event.pointerId !== pointerId) {
           return;
         }
 
-        event.preventDefault();
-        renderPosition(mouseStartPosition - (event.clientX - mouseStartX));
-      });
+        const deltaX = event.clientX - startX;
+        const deltaY = event.clientY - startY;
+        const absX = Math.abs(deltaX);
+        const absY = Math.abs(deltaY);
 
-      const resetMouseState = () => {
-        mousePointerId = null;
-        mouseDragging = false;
-        scroller.classList.remove("is-dragging");
+        if (!axis) {
+          if (Math.max(absX, absY) < 4) {
+            return;
+          }
+          axis = absX > absY * 0.8 ? "x" : "y";
+          if (axis === "x") {
+            scroller.classList.add("is-dragging");
+          }
+        }
+
+        if (!event.cancelable) {
+          return;
+        }
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (axis === "x") {
+          renderPosition(startPosition - deltaX);
+        } else if (axis === "y") {
+          window.scrollTo({
+            top: clampWindowScroll(startWindowY - deltaY),
+            behavior: "auto",
+          });
+        }
       };
 
-      scroller.addEventListener("pointerup", resetMouseState);
-      scroller.addEventListener("pointercancel", resetMouseState);
-      scroller.addEventListener("lostpointercapture", resetMouseState);
+      const endGesture = (event) => {
+        if (pointerId !== null && event.pointerId !== undefined && event.pointerId !== pointerId) {
+          return;
+        }
+        resetState();
+      };
+
+      scroller.addEventListener("pointerdown", beginGesture);
+      window.addEventListener("pointermove", moveGesture, { passive: false, capture: true });
+      window.addEventListener("pointerup", endGesture, { capture: true });
+      window.addEventListener("pointercancel", endGesture, { capture: true });
+      window.addEventListener("lostpointercapture", resetState, { capture: true });
       scroller.addEventListener("dragstart", (event) => event.preventDefault());
       window.addEventListener("resize", updateTableControls);
       updateTableControls();

@@ -496,10 +496,12 @@ img {
 .table-scroll {
   overflow: hidden;
   overscroll-behavior-x: contain;
+  touch-action: none;
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
+  -webkit-user-drag: none;
   cursor: grab;
   border-radius: 18px;
   border: 1px solid rgba(19, 32, 51, 0.08);
