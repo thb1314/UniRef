@@ -24,6 +24,7 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <div class="table-debug-overlay" aria-live="polite">debug ready</div>
   <div class="page-shell">
     <header class="site-header">
       <div class="brand-lockup">
@@ -241,7 +242,6 @@
             </div>
 
             <div class="table-scroll-hint">Swipe horizontally to view the full table</div>
-            <div class="table-debug-badge" aria-live="polite"></div>
             <div class="table-controls" aria-label="Table navigation controls">
               <label class="table-swipe-label" for="zero-shot-scroll-range">Swipe horizontally or use the slider below to view the full table</label>
               <input
@@ -477,7 +477,6 @@
             </div>
 
             <div class="table-scroll-hint">Swipe horizontally to view the full table</div>
-            <div class="table-debug-badge" aria-live="polite"></div>
             <div class="table-controls" aria-label="Table navigation controls">
               <label class="table-swipe-label" for="finetune-scroll-range">Swipe horizontally or use the slider below to view the full table</label>
               <input
@@ -603,9 +602,9 @@
       let touchStartX = 0;
       let touchStartY = 0;
       let touchStartPosition = 0;
-      const debugBadge = card.querySelector(".table-debug-badge");
+      const debugBadge = document.querySelector(".table-debug-overlay");
       const setDebug = (text) => {
-        if (debugBadge) debugBadge.textContent = text;
+        if (debugBadge) debugBadge.textContent = text || "debug ready";
       };
 
       const resetTouchState = () => {

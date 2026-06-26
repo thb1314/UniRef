@@ -560,14 +560,23 @@ img {
   margin: 12px 0 14px;
 }
 
-.table-debug-badge {
-  display: block;
-  min-height: 18px;
-  margin: 8px 0 10px;
-  color: var(--amber);
-  font-size: 0.78rem;
+.table-debug-overlay {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 9999;
+  max-width: min(280px, calc(100vw - 32px));
+  padding: 10px 12px;
+  border: 1px solid rgba(111, 59, 194, 0.26);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--violet);
+  font-size: 0.82rem;
   font-weight: 700;
   letter-spacing: 0.02em;
+  box-shadow: 0 12px 30px rgba(19, 32, 51, 0.14);
+  pointer-events: none;
+  opacity: 0.95;
 }
 
 .table-scroll-hint {
@@ -778,10 +787,6 @@ img {
   }
 
   .table-scroll-hint {
-    display: block;
-  }
-
-  .table-debug-badge {
     display: block;
   }
 
