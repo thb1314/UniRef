@@ -494,9 +494,10 @@ img {
 }
 
 .table-scroll {
+  position: relative;
   overflow: hidden;
   overscroll-behavior-x: contain;
-  touch-action: none;
+  touch-action: pan-y;
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -508,9 +509,19 @@ img {
   background: rgba(255, 255, 255, 0.82);
 }
 
+.table-gesture-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  touch-action: none;
+  background: transparent;
+}
+
 .table-width {
   min-width: 100%;
   pointer-events: none;
+  position: relative;
+  z-index: 1;
   transform: translate3d(0, 0, 0);
   will-change: transform;
 }
