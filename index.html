@@ -564,7 +564,6 @@
 
     </main>
   </div>
-  <script src="https://unpkg.com/scrollbooster@3.0.2/dist/scrollbooster.min.js"></script>
   <script>
     const tableCards = document.querySelectorAll(".table-card");
 
@@ -572,7 +571,6 @@
       const scroller = card.querySelector(".table-scroll");
       const slider = card.querySelector(".table-scroll-range");
       const controls = card.querySelector(".table-controls");
-      const content = scroller.querySelector(".table-width");
 
       const updateTableControls = () => {
         const maxScroll = Math.max(scroller.scrollWidth - scroller.clientWidth, 0);
@@ -587,26 +585,108 @@
         scroller.scrollLeft = Number(slider.value);
       });
 
-      if (window.ScrollBooster && content) {
-        const tableBooster = new ScrollBooster({
-          viewport: scroller,
-          content,
-          direction: "horizontal",
-          scrollMode: "native",
-          bounce: false,
-          lockScrollOnDragDirection: "horizontal",
-          dragDirectionTolerance: 45,
-          emulateScroll: true,
-          preventDefaultOnEmulateScroll: "horizontal",
-          pointerDownPreventDefault: false,
-          onPointerDown: () => scroller.classList.add("is-dragging"),
-          onPointerUp: () => scroller.classList.remove("is-dragging"),
-          onUpdate: updateTableControls,
-        });
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let touchStartScrollLeft = 0;
+      let touchLockedHorizontal = false;
+      let touchActive = false;
 
-        window.addEventListener("resize", () => tableBooster.updateMetrics());
-      }
+      const resetTouchState = () => {
+        touchActive = false;
+        touchLockedHorizontal = false;
+        scroller.classList.remove("is-dragging");
+      };
 
+      scroller.addEventListener(
+        "touchstart",
+        (event) => {
+          if (event.touches.length !== 1) {
+            return;
+          }
+
+          const touch = event.touches[0];
+          touchStartX = touch.clientX;
+          touchStartY = touch.clientY;
+          touchStartScrollLeft = scroller.scrollLeft;
+          touchLockedHorizontal = false;
+          touchActive = true;
+          scroller.classList.add("is-dragging");
+        },
+        { passive: true }
+      );
+
+      scroller.addEventListener(
+        "touchmove",
+        (event) => {
+          if (!touchActive || event.touches.length !== 1) {
+            return;
+          }
+
+          const touch = event.touches[0];
+          const deltaX = touch.clientX - touchStartX;
+          const deltaY = touch.clientY - touchStartY;
+
+          if (!touchLockedHorizontal) {
+            if (Math.abs(deltaX) < 6 && Math.abs(deltaY) < 6) {
+              return;
+            }
+
+            if (Math.abs(deltaX) <= Math.abs(deltaY)) {
+              resetTouchState();
+              return;
+            }
+
+            touchLockedHorizontal = true;
+          }
+
+          event.preventDefault();
+          scroller.scrollLeft = touchStartScrollLeft - deltaX;
+        },
+        { passive: false }
+      );
+
+      scroller.addEventListener("touchend", resetTouchState);
+      scroller.addEventListener("touchcancel", resetTouchState);
+
+      let mousePointerId = null;
+      let mouseStartX = 0;
+      let mouseStartScrollLeft = 0;
+      let mouseDragging = false;
+
+      scroller.addEventListener("pointerdown", (event) => {
+        if (event.pointerType !== "mouse" || event.button !== 0) {
+          return;
+        }
+
+        mousePointerId = event.pointerId;
+        mouseStartX = event.clientX;
+        mouseStartScrollLeft = scroller.scrollLeft;
+        mouseDragging = true;
+        scroller.classList.add("is-dragging");
+
+        if (scroller.setPointerCapture) {
+          scroller.setPointerCapture(mousePointerId);
+        }
+      });
+
+      scroller.addEventListener("pointermove", (event) => {
+        if (!mouseDragging || event.pointerId !== mousePointerId) {
+          return;
+        }
+
+        event.preventDefault();
+        scroller.scrollLeft = mouseStartScrollLeft - (event.clientX - mouseStartX);
+      });
+
+      const resetMouseState = () => {
+        mousePointerId = null;
+        mouseDragging = false;
+        scroller.classList.remove("is-dragging");
+      };
+
+      scroller.addEventListener("pointerup", resetMouseState);
+      scroller.addEventListener("pointercancel", resetMouseState);
+      scroller.addEventListener("lostpointercapture", resetMouseState);
       scroller.addEventListener("scroll", updateTableControls, { passive: true });
       window.addEventListener("resize", updateTableControls);
       updateTableControls();

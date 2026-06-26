@@ -498,6 +498,7 @@ img {
   overflow-y: hidden;
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
   -webkit-tap-highlight-color: transparent;
   cursor: grab;
   border-radius: 18px;
@@ -533,6 +534,8 @@ img {
 
 .table-scroll.is-dragging {
   cursor: grabbing;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .table-controls {
@@ -734,12 +737,22 @@ img {
     display: grid !important;
   }
 
-  .button {
-    width: 100%;
+  .table-scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .table-scroll::-webkit-scrollbar {
+    height: 10px;
   }
 
   .section-heading h2 {
     font-size: 2.1rem;
+  }
+
+  .button {
+    width: 100%;
   }
 
   .hero-copy h1 {
