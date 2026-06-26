@@ -772,6 +772,7 @@ img {
   }
 
   .table-scroll {
+    position: relative;
     overflow: hidden;
   }
 

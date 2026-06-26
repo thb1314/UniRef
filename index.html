@@ -255,7 +255,6 @@
               >
             </div>
             <div class="table-scroll">
-              <div class="table-gesture-layer" aria-hidden="true"></div>
               <div class="table-width table-width-zero-shot">
                 <table class="results-table">
                 <thead>
@@ -491,7 +490,6 @@
               >
             </div>
             <div class="table-scroll">
-              <div class="table-gesture-layer" aria-hidden="true"></div>
               <div class="table-width table-width-finetune">
                 <table class="results-table">
                 <thead>
@@ -573,7 +571,6 @@
 
     for (const card of tableCards) {
       const scroller = card.querySelector(".table-scroll");
-      const gestureLayer = card.querySelector(".table-gesture-layer");
       const content = card.querySelector(".table-width");
       const slider = card.querySelector(".table-scroll-range");
       const controls = card.querySelector(".table-controls");
@@ -611,10 +608,14 @@
         scroller.classList.remove("is-dragging");
       };
 
-      gestureLayer.addEventListener(
+      document.addEventListener(
         "touchstart",
         (event) => {
-          if (event.touches.length !== 1 || getMaxScroll() <= 0) {
+          if (!card.contains(event.target) || event.target.closest(".table-controls") || getMaxScroll() <= 0) {
+            return;
+          }
+
+          if (event.touches.length !== 1) {
             return;
           }
 
@@ -625,13 +626,13 @@
           touchAxis = null;
           touchActive = true;
         },
-        { passive: true }
+        { passive: true, capture: true }
       );
 
-      gestureLayer.addEventListener(
+      document.addEventListener(
         "touchmove",
         (event) => {
-          if (!touchActive || event.touches.length !== 1) {
+          if (!touchActive || !card.contains(event.target) || event.touches.length !== 1) {
             return;
           }
 
@@ -665,18 +666,18 @@
           event.stopPropagation();
           renderPosition(touchStartPosition - deltaX);
         },
-        { passive: false }
+        { passive: false, capture: true }
       );
 
-      gestureLayer.addEventListener("touchend", resetTouchState);
-      gestureLayer.addEventListener("touchcancel", resetTouchState);
+      document.addEventListener("touchend", resetTouchState, { capture: true });
+      document.addEventListener("touchcancel", resetTouchState, { capture: true });
 
       let pointerId = null;
       let mouseStartX = 0;
       let mouseStartPosition = 0;
       let mouseDragging = false;
 
-      gestureLayer.addEventListener("pointerdown", (event) => {
+      scroller.addEventListener("pointerdown", (event) => {
         if (event.pointerType !== "mouse" || event.button !== 0 || getMaxScroll() <= 0) {
           return;
         }
@@ -687,12 +688,12 @@
         mouseDragging = true;
         scroller.classList.add("is-dragging");
 
-        if (gestureLayer.setPointerCapture) {
-          gestureLayer.setPointerCapture(pointerId);
+        if (scroller.setPointerCapture) {
+          scroller.setPointerCapture(pointerId);
         }
       });
 
-      gestureLayer.addEventListener("pointermove", (event) => {
+      scroller.addEventListener("pointermove", (event) => {
         if (!mouseDragging || event.pointerId !== pointerId) {
           return;
         }
@@ -707,10 +708,10 @@
         scroller.classList.remove("is-dragging");
       };
 
-      gestureLayer.addEventListener("pointerup", resetMouseState);
-      gestureLayer.addEventListener("pointercancel", resetMouseState);
-      gestureLayer.addEventListener("lostpointercapture", resetMouseState);
-      gestureLayer.addEventListener("dragstart", (event) => event.preventDefault());
+      scroller.addEventListener("pointerup", resetMouseState);
+      scroller.addEventListener("pointercancel", resetMouseState);
+      scroller.addEventListener("lostpointercapture", resetMouseState);
+      scroller.addEventListener("dragstart", (event) => event.preventDefault());
       window.addEventListener("resize", updateTableControls);
       updateTableControls();
     }
