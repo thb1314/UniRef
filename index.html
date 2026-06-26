@@ -574,136 +574,95 @@
     };
     setGlobalDebug("script loaded");
 
-    const tableStates = new WeakMap();
     const tableCards = document.querySelectorAll(".table-card");
 
     for (const card of tableCards) {
       const scroller = card.querySelector(".table-scroll");
+      const gestureLayer = card.querySelector(".table-gesture-layer");
       const content = card.querySelector(".table-width");
       const slider = card.querySelector(".table-scroll-range");
       const controls = card.querySelector(".table-controls");
-
-      const state = {
-        positionX: 0,
-        active: false,
-        axis: null,
-        startX: 0,
-        startY: 0,
-        startPosition: 0,
-      };
-      tableStates.set(card, state);
+      let positionX = 0;
+      let active = false;
+      let axis = null;
+      let startX = 0;
+      let startY = 0;
+      let startPosition = 0;
+      let startWindowY = 0;
 
       const getMaxScroll = () => Math.max(content.scrollWidth - scroller.clientWidth, 0);
       const clampScroll = (value) => Math.min(Math.max(value, 0), getMaxScroll());
+      const clampWindowScroll = (value) => Math.min(Math.max(value, 0), Math.max(document.documentElement.scrollHeight - window.innerHeight, 0));
 
       const renderPosition = (nextX) => {
-        state.positionX = clampScroll(nextX);
-        content.style.transform = `translate3d(${-state.positionX}px, 0, 0)`;
-        slider.value = String(Math.round(state.positionX));
+        positionX = clampScroll(nextX);
+        content.style.transform = `translate3d(${-positionX}px, 0, 0)`;
+        slider.value = String(Math.round(positionX));
       };
 
       const updateTableControls = () => {
         const maxScroll = getMaxScroll();
         controls.hidden = maxScroll <= 0;
         slider.max = String(Math.max(Math.round(maxScroll), 1));
-        renderPosition(state.positionX);
+        renderPosition(positionX);
       };
 
       slider.addEventListener("input", () => {
         renderPosition(Number(slider.value));
       });
 
-      state.getMaxScroll = getMaxScroll;
-      state.renderPosition = renderPosition;
-      state.reset = () => {
-        state.active = false;
-        state.axis = null;
+      const reset = () => {
+        active = false;
+        axis = null;
         scroller.classList.remove("is-dragging");
+        setGlobalDebug("script loaded");
       };
-      state.scroller = scroller;
 
-      window.addEventListener("resize", updateTableControls);
-      updateTableControls();
-    }
-
-    let activeCard = null;
-
-    const findTableCardFromPoint = (event) => {
-      const point = event.touches ? event.touches[0] : event;
-      const directTarget = event.target && event.target.closest ? event.target.closest(".table-card") : null;
-      if (directTarget) return directTarget;
-      const elementAtPoint = document.elementFromPoint(point.clientX, point.clientY);
-      return elementAtPoint && elementAtPoint.closest ? elementAtPoint.closest(".table-card") : null;
-    };
-
-    document.addEventListener(
-      "touchstart",
-      (event) => {
-        const card = findTableCardFromPoint(event);
-        const tag = event.target?.tagName ? event.target.tagName.toLowerCase() : "unknown";
-        setGlobalDebug(`touchstart:${tag}${card ? ":table" : ":no-table"}`);
-
-        if (!card || event.target.closest(".table-controls") || event.touches.length !== 1) {
-          activeCard = null;
+      gestureLayer.addEventListener("touchstart", (event) => {
+        if (event.touches.length !== 1 || getMaxScroll() <= 0) {
           return;
         }
-
-        const state = tableStates.get(card);
-        if (!state || state.getMaxScroll() <= 0) {
-          activeCard = null;
-          return;
-        }
-
         if (event.cancelable) {
           event.preventDefault();
         }
-
         const touch = event.touches[0];
-        activeCard = card;
-        state.startX = touch.clientX;
-        state.startY = touch.clientY;
-        state.startPosition = state.positionX;
-        state.axis = null;
-        state.active = true;
-      },
-      { passive: false, capture: true }
-    );
+        startX = touch.clientX;
+        startY = touch.clientY;
+        startPosition = positionX;
+        startWindowY = window.scrollY;
+        active = true;
+        axis = null;
+        setGlobalDebug("touchstart");
+      }, { passive: false });
 
-    document.addEventListener(
-      "touchmove",
-      (event) => {
-        if (!activeCard || event.touches.length !== 1) {
+      gestureLayer.addEventListener("touchmove", (event) => {
+        if (!active || event.touches.length !== 1) {
           return;
         }
-
-        const state = tableStates.get(activeCard);
-        if (!state || !state.active) {
-          return;
-        }
-
         const touch = event.touches[0];
-        const deltaX = touch.clientX - state.startX;
-        const deltaY = touch.clientY - state.startY;
+        const deltaX = touch.clientX - startX;
+        const deltaY = touch.clientY - startY;
         const absX = Math.abs(deltaX);
         const absY = Math.abs(deltaY);
 
-        if (!state.axis) {
+        if (!axis) {
           if (Math.max(absX, absY) < 4) {
             return;
           }
-
-          state.axis = absX > absY * 0.8 ? "x" : "y";
-          setGlobalDebug(`axis:${state.axis}`);
-          if (state.axis === "x") {
-            state.scroller.classList.add("is-dragging");
-          } else {
-            state.reset();
-            activeCard = null;
-            return;
+          axis = absX > absY * 0.8 ? "x" : "y";
+          setGlobalDebug(`axis:${axis}`);
+          if (axis === "x") {
+            scroller.classList.add("is-dragging");
           }
         }
 
-        if (state.axis !== "x") {
+        if (axis === "x") {
+          if (event.cancelable) {
+            event.preventDefault();
+          }
+          event.stopPropagation();
+          setGlobalDebug(`move:${Math.round(deltaX)}`);
+          renderPosition(startPosition - deltaX);
           return;
         }
 
@@ -711,31 +670,55 @@
           event.preventDefault();
         }
         event.stopPropagation();
-        setGlobalDebug(`move:${Math.round(deltaX)}`);
-        state.renderPosition(state.startPosition - deltaX);
-      },
-      { passive: false, capture: true }
-    );
+        window.scrollTo({ top: clampWindowScroll(startWindowY - deltaY), behavior: "auto" });
+      }, { passive: false });
 
-    const resetActiveTouch = () => {
-      if (activeCard) {
-        const state = tableStates.get(activeCard);
-        if (state) state.reset();
-      }
-      activeCard = null;
-    };
-    document.addEventListener("touchend", resetActiveTouch, { capture: true });
-    document.addEventListener("touchcancel", resetActiveTouch, { capture: true });
+      gestureLayer.addEventListener("touchend", reset);
+      gestureLayer.addEventListener("touchcancel", reset);
 
-    document.addEventListener(
-      "pointerdown",
-      (event) => {
-        const tag = event.target?.tagName ? event.target.tagName.toLowerCase() : "unknown";
-        const card = event.target?.closest ? event.target.closest(".table-card") : null;
-        setGlobalDebug(`pointer:${event.pointerType}:${tag}${card ? ":table" : ":no-table"}`);
-      },
-      { capture: true }
-    );
+      let pointerId = null;
+      let mouseStartX = 0;
+      let mouseStartPosition = 0;
+      let mouseDragging = false;
+
+      gestureLayer.addEventListener("pointerdown", (event) => {
+        if (event.pointerType !== "mouse" || event.button !== 0 || getMaxScroll() <= 0) {
+          return;
+        }
+        pointerId = event.pointerId;
+        mouseStartX = event.clientX;
+        mouseStartPosition = positionX;
+        mouseDragging = true;
+        scroller.classList.add("is-dragging");
+        setGlobalDebug("pointerdown");
+        if (gestureLayer.setPointerCapture) {
+          gestureLayer.setPointerCapture(pointerId);
+        }
+      });
+
+      gestureLayer.addEventListener("pointermove", (event) => {
+        if (!mouseDragging || event.pointerId !== pointerId) {
+          return;
+        }
+        event.preventDefault();
+        setGlobalDebug(`pointermove:${Math.round(event.clientX - mouseStartX)}`);
+        renderPosition(mouseStartPosition - (event.clientX - mouseStartX));
+      });
+
+      const resetMouse = () => {
+        pointerId = null;
+        mouseDragging = false;
+        scroller.classList.remove("is-dragging");
+        setGlobalDebug("script loaded");
+      };
+
+      gestureLayer.addEventListener("pointerup", resetMouse);
+      gestureLayer.addEventListener("pointercancel", resetMouse);
+      gestureLayer.addEventListener("lostpointercapture", resetMouse);
+      gestureLayer.addEventListener("dragstart", (event) => event.preventDefault());
+      window.addEventListener("resize", updateTableControls);
+      updateTableControls();
+    }
   </script>
 </body>
 </html>

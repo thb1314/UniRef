@@ -497,7 +497,7 @@ img {
   position: relative;
   overflow: hidden;
   overscroll-behavior-x: contain;
-  touch-action: pan-y;
+  touch-action: none;
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
