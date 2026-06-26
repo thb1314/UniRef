@@ -240,9 +240,19 @@
               <p class="table-note">Metrics: P@(F1=1, IoU&gt;=0.5) and N-acc. -- means unsupported.</p>
             </div>
 
-            <div class="table-swipe-hint" aria-hidden="true">
-              <span class="table-swipe-label">Swipe left or right to view the full table</span>
-              <span class="table-swipe-rail"><span class="table-swipe-thumb"></span></span>
+            <div class="table-controls" aria-label="Table navigation controls">
+              <div class="table-controls-main">
+                <button class="table-control-button" type="button" data-table-dir="-1" aria-label="Scroll table left">
+                  &larr;
+                </button>
+                <div class="table-scrollbar" aria-hidden="true">
+                  <span class="table-scrollbar-thumb"></span>
+                </div>
+                <button class="table-control-button" type="button" data-table-dir="1" aria-label="Scroll table right">
+                  &rarr;
+                </button>
+              </div>
+              <span class="table-swipe-label">Use arrows or swipe to view the full table</span>
             </div>
             <div class="table-scroll">
               <div class="table-width table-width-zero-shot">
@@ -465,9 +475,19 @@
               <p class="table-note">Merged training and matched training are both shown as reported in the paper.</p>
             </div>
 
-            <div class="table-swipe-hint" aria-hidden="true">
-              <span class="table-swipe-label">Swipe left or right to view the full table</span>
-              <span class="table-swipe-rail"><span class="table-swipe-thumb"></span></span>
+            <div class="table-controls" aria-label="Table navigation controls">
+              <div class="table-controls-main">
+                <button class="table-control-button" type="button" data-table-dir="-1" aria-label="Scroll table left">
+                  &larr;
+                </button>
+                <div class="table-scrollbar" aria-hidden="true">
+                  <span class="table-scrollbar-thumb"></span>
+                </div>
+                <button class="table-control-button" type="button" data-table-dir="1" aria-label="Scroll table right">
+                  &rarr;
+                </button>
+              </div>
+              <span class="table-swipe-label">Use arrows or swipe to view the full table</span>
             </div>
             <div class="table-scroll">
               <div class="table-width table-width-finetune">
@@ -546,5 +566,46 @@
 
     </main>
   </div>
+  <script>
+    const tableCards = document.querySelectorAll(".table-card");
+
+    for (const card of tableCards) {
+      const scroller = card.querySelector(".table-scroll");
+      const thumb = card.querySelector(".table-scrollbar-thumb");
+      const buttons = card.querySelectorAll("[data-table-dir]");
+      const controls = card.querySelector(".table-controls");
+
+      const updateTableControls = () => {
+        const maxScroll = Math.max(scroller.scrollWidth - scroller.clientWidth, 0);
+
+        const visibleRatio = Math.min(scroller.clientWidth / scroller.scrollWidth, 1);
+        const thumbWidth = Math.max(Math.min(visibleRatio * 100, 100), 18);
+        const maxOffset = 100 - thumbWidth;
+        const progress = maxScroll > 0 ? scroller.scrollLeft / maxScroll : 0;
+
+        thumb.style.width = thumbWidth + "%";
+        thumb.style.transform = "translateX(" + (progress * maxOffset) + "%)";
+
+        for (const button of buttons) {
+          const dir = Number(button.dataset.tableDir);
+          button.disabled = dir < 0 ? scroller.scrollLeft <= 1 : scroller.scrollLeft >= maxScroll - 1;
+        }
+      };
+
+      for (const button of buttons) {
+        button.addEventListener("click", () => {
+          const dir = Number(button.dataset.tableDir);
+          scroller.scrollBy({
+            left: dir * scroller.clientWidth * 0.72,
+            behavior: "smooth"
+          });
+        });
+      }
+
+      scroller.addEventListener("scroll", updateTableControls, { passive: true });
+      window.addEventListener("resize", updateTableControls);
+      updateTableControls();
+    }
+  </script>
 </body>
 </html>

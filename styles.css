@@ -451,7 +451,6 @@ img {
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   background: var(--surface);
-  backdrop-filter: blur(18px);
   box-shadow: var(--shadow);
 }
 
@@ -488,11 +487,9 @@ img {
 }
 
 .table-scroll {
-  position: relative;
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior-x: contain;
   border-radius: 18px;
   border: 1px solid rgba(19, 32, 51, 0.08);
   background: rgba(255, 255, 255, 0.82);
@@ -510,18 +507,6 @@ img {
   width: 880px;
 }
 
-.table-scroll::after {
-  content: "";
-  position: sticky;
-  right: 0;
-  display: block;
-  width: 26px;
-  height: 100%;
-  margin-left: auto;
-  pointer-events: none;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.96));
-}
-
 .table-scroll::-webkit-scrollbar {
   height: 10px;
 }
@@ -536,37 +521,62 @@ img {
   border-radius: 999px;
 }
 
-.table-swipe-hint {
+.table-controls {
   display: none;
-  align-items: center;
   gap: 12px;
-  margin-top: 12px;
+  margin: 12px 0 14px;
 }
 
 .table-swipe-label {
   color: var(--muted);
   font-size: 0.88rem;
-  white-space: nowrap;
+  line-height: 1.5;
 }
 
-.table-swipe-rail {
+.table-controls-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.table-control-button {
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(19, 32, 51, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--blue-deep);
+  font: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.table-control-button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.table-scrollbar {
   position: relative;
   flex: 1 1 auto;
-  height: 8px;
+  height: 10px;
   border-radius: 999px;
   background: rgba(19, 32, 51, 0.08);
   overflow: hidden;
 }
 
-.table-swipe-thumb {
+.table-scrollbar-thumb {
   position: absolute;
   top: 0;
   left: 0;
-  width: 34%;
+  width: 24%;
   height: 100%;
   border-radius: 999px;
   background: linear-gradient(90deg, var(--blue), var(--violet));
-  animation: swipe-hint 1.8s ease-in-out infinite;
+  transform: translateX(0);
+  transition: transform 0.15s ease-out, width 0.15s ease-out;
 }
 
 .results-table {
@@ -639,23 +649,6 @@ img {
   }
 }
 
-@keyframes swipe-hint {
-  0% {
-    transform: translateX(0);
-    opacity: 0.95;
-  }
-
-  50% {
-    transform: translateX(120%);
-    opacity: 0.7;
-  }
-
-  100% {
-    transform: translateX(0);
-    opacity: 0.95;
-  }
-}
-
 @media (max-width: 1024px) {
   .hero,
   .detail-grid,
@@ -723,8 +716,8 @@ img {
     text-align: left;
   }
 
-  .table-swipe-hint {
-    display: flex;
+  .table-controls {
+    display: grid !important;
   }
 
   .button {
@@ -758,11 +751,8 @@ img {
 
   .button,
   .site-nav a,
-  .table-swipe-thumb {
+  .table-scrollbar-thumb,
+  .table-control-button {
     transition: none;
-  }
-
-  .table-swipe-thumb {
-    animation: none;
   }
 }
