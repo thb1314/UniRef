@@ -571,11 +571,19 @@
 
     for (const card of tableCards) {
       const scroller = card.querySelector(".table-scroll");
+      const content = card.querySelector(".table-width");
       const slider = card.querySelector(".table-scroll-range");
       const controls = card.querySelector(".table-controls");
+      let positionX = 0;
 
-      const getMaxScroll = () => Math.max(scroller.scrollWidth - scroller.clientWidth, 0);
+      const getMaxScroll = () => Math.max(content.scrollWidth - scroller.clientWidth, 0);
       const clampScroll = (value) => Math.min(Math.max(value, 0), getMaxScroll());
+
+      const renderPosition = (nextX) => {
+        positionX = clampScroll(nextX);
+        content.style.transform = `translate3d(${-positionX}px, 0, 0)`;
+        slider.value = String(Math.round(positionX));
+      };
 
       const updateTableControls = () => {
         const maxScroll = getMaxScroll();
@@ -583,16 +591,16 @@
 
         controls.hidden = !needsScroll;
         slider.max = String(Math.max(Math.round(maxScroll), 1));
-        slider.value = String(Math.min(Math.round(scroller.scrollLeft), Math.round(maxScroll)));
+        renderPosition(positionX);
       };
 
       slider.addEventListener("input", () => {
-        scroller.scrollLeft = Number(slider.value);
+        renderPosition(Number(slider.value));
       });
 
       let touchStartX = 0;
       let touchStartY = 0;
-      let touchStartScrollLeft = 0;
+      let touchStartPosition = 0;
       let touchAxis = null;
       let touchActive = false;
 
@@ -612,7 +620,7 @@
           const touch = event.touches[0];
           touchStartX = touch.clientX;
           touchStartY = touch.clientY;
-          touchStartScrollLeft = scroller.scrollLeft;
+          touchStartPosition = positionX;
           touchAxis = null;
           touchActive = true;
         },
@@ -633,11 +641,11 @@
           const absY = Math.abs(deltaY);
 
           if (!touchAxis) {
-            if (Math.max(absX, absY) < 5) {
+            if (Math.max(absX, absY) < 4) {
               return;
             }
 
-            touchAxis = absX > absY * 1.05 ? "x" : "y";
+            touchAxis = absX > absY * 0.75 ? "x" : "y";
 
             if (touchAxis === "x") {
               scroller.classList.add("is-dragging");
@@ -652,9 +660,7 @@
             event.preventDefault();
           }
           event.stopPropagation();
-
-          scroller.scrollLeft = clampScroll(touchStartScrollLeft - deltaX);
-          updateTableControls();
+          renderPosition(touchStartPosition - deltaX);
         },
         { passive: false, capture: true }
       );
@@ -664,7 +670,7 @@
 
       let mousePointerId = null;
       let mouseStartX = 0;
-      let mouseStartScrollLeft = 0;
+      let mouseStartPosition = 0;
       let mouseDragging = false;
 
       scroller.addEventListener("pointerdown", (event) => {
@@ -674,7 +680,7 @@
 
         mousePointerId = event.pointerId;
         mouseStartX = event.clientX;
-        mouseStartScrollLeft = scroller.scrollLeft;
+        mouseStartPosition = positionX;
         mouseDragging = true;
         scroller.classList.add("is-dragging");
 
@@ -689,8 +695,7 @@
         }
 
         event.preventDefault();
-        scroller.scrollLeft = clampScroll(mouseStartScrollLeft - (event.clientX - mouseStartX));
-        updateTableControls();
+        renderPosition(mouseStartPosition - (event.clientX - mouseStartX));
       });
 
       const resetMouseState = () => {
@@ -703,7 +708,6 @@
       scroller.addEventListener("pointercancel", resetMouseState);
       scroller.addEventListener("lostpointercapture", resetMouseState);
       scroller.addEventListener("dragstart", (event) => event.preventDefault());
-      scroller.addEventListener("scroll", updateTableControls, { passive: true });
       window.addEventListener("resize", updateTableControls);
       updateTableControls();
     }
