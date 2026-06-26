@@ -497,10 +497,73 @@ img {
 }
 
 .table-scroll {
+  position: relative;
   overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
   border-radius: 18px;
   border: 1px solid rgba(19, 32, 51, 0.08);
   background: rgba(255, 255, 255, 0.82);
+}
+
+.table-scroll::after {
+  content: "";
+  position: sticky;
+  right: 0;
+  display: block;
+  width: 26px;
+  height: 100%;
+  margin-left: auto;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.96));
+}
+
+.table-scroll::-webkit-scrollbar {
+  height: 10px;
+}
+
+.table-scroll::-webkit-scrollbar-track {
+  background: rgba(19, 32, 51, 0.08);
+  border-radius: 999px;
+}
+
+.table-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, var(--blue), var(--violet));
+  border-radius: 999px;
+}
+
+.table-swipe-hint {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.table-swipe-label {
+  color: var(--muted);
+  font-size: 0.88rem;
+  white-space: nowrap;
+}
+
+.table-swipe-rail {
+  position: relative;
+  flex: 1 1 auto;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(19, 32, 51, 0.08);
+  overflow: hidden;
+}
+
+.table-swipe-thumb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 34%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--blue), var(--violet));
+  animation: swipe-hint 1.8s ease-in-out infinite;
 }
 
 .results-table {
@@ -599,6 +662,23 @@ img {
   }
 }
 
+@keyframes swipe-hint {
+  0% {
+    transform: translateX(0);
+    opacity: 0.95;
+  }
+
+  50% {
+    transform: translateX(120%);
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: translateX(0);
+    opacity: 0.95;
+  }
+}
+
 @media (max-width: 1024px) {
   .hero,
   .detail-grid,
@@ -667,6 +747,10 @@ img {
     text-align: left;
   }
 
+  .table-swipe-hint {
+    display: flex;
+  }
+
   .button {
     width: 100%;
   }
@@ -699,7 +783,12 @@ img {
   }
 
   .button,
-  .site-nav a {
+  .site-nav a,
+  .table-swipe-thumb {
     transition: none;
+  }
+
+  .table-swipe-thumb {
+    animation: none;
   }
 }
