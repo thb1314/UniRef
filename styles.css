@@ -499,6 +499,9 @@ img {
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
   -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
   cursor: grab;
   border-radius: 18px;
   border: 1px solid rgba(19, 32, 51, 0.08);
@@ -507,6 +510,7 @@ img {
 
 .table-width {
   min-width: 100%;
+  pointer-events: none;
 }
 
 .table-width-zero-shot {
@@ -542,6 +546,21 @@ img {
   gap: 10px;
   margin: 12px 0 14px;
 }
+
+.table-scroll-hint {
+  display: none;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.table-scroll-hint::before {
+  content: "↔ ";
+  color: var(--violet);
+  font-weight: 700;
+}
+
 
 .table-swipe-label {
   color: var(--muted);
@@ -734,6 +753,10 @@ img {
 
   .table-controls {
     display: grid !important;
+  }
+
+  .table-scroll-hint {
+    display: block;
   }
 
   .table-scroll {
