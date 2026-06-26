@@ -74,9 +74,7 @@ img {
 .benchmark-section,
 .detail-grid,
 .findings-section,
-.comparison-strip,
-.citation-section,
-.site-footer {
+.comparison-strip {
   animation: rise-in 0.8s ease both;
 }
 
@@ -146,9 +144,7 @@ img {
 .feature-card,
 .detail-panel,
 .finding-card,
-.strip-panel,
-.citation-card,
-.site-footer {
+.strip-panel {
   border: 1px solid var(--line);
   background: var(--surface);
   backdrop-filter: blur(18px);
@@ -199,8 +195,7 @@ img {
 .feature-card p,
 .detail-panel p,
 .finding-card p,
-.aside-text,
-.site-footer p {
+.aside-text {
   margin: 0;
   color: var(--muted);
   line-height: 1.7;
@@ -303,8 +298,7 @@ img {
 
 .overview-section,
 .benchmark-section,
-.findings-section,
-.citation-section {
+.findings-section {
   margin-bottom: 34px;
 }
 
@@ -392,7 +386,6 @@ img {
 .feature-card h3,
 .detail-panel h3,
 .finding-card h3,
-.citation-card pre,
 .strip-value {
   margin: 0;
 }
@@ -433,9 +426,7 @@ img {
 }
 
 .detail-panel,
-.strip-panel,
-.citation-card,
-.site-footer {
+.strip-panel {
   padding: 28px;
   border-radius: var(--radius-lg);
 }
@@ -507,6 +498,18 @@ img {
   background: rgba(255, 255, 255, 0.82);
 }
 
+.table-width {
+  min-width: 100%;
+}
+
+.table-width-zero-shot {
+  width: 980px;
+}
+
+.table-width-finetune {
+  width: 880px;
+}
+
 .table-scroll::after {
   content: "";
   position: sticky;
@@ -572,18 +575,14 @@ img {
   font-size: 0.96rem;
 }
 
-.results-table-wide {
-  min-width: 980px;
-}
-
-.results-table-finetune {
-  min-width: 880px;
-}
-
 .results-table th,
 .results-table td {
   padding: 13px 16px;
   border-bottom: 1px solid rgba(19, 32, 51, 0.08);
+}
+
+.results-table th {
+  white-space: nowrap;
 }
 
 .results-table thead th {
@@ -600,6 +599,11 @@ img {
 
 .results-table tbody td {
   text-align: center;
+}
+
+.results-table tbody td:first-child,
+.group-row td {
+  white-space: normal;
 }
 
 .results-table tbody tr:last-child td {
@@ -621,33 +625,6 @@ img {
   font-family: "Space Grotesk", sans-serif;
   font-size: 1.18rem;
   line-height: 1.4;
-}
-
-.citation-card {
-  padding: 0;
-  overflow: hidden;
-}
-
-.citation-card pre {
-  margin: 0;
-  padding: 24px;
-  background: #111b2b;
-  color: #eaf0ff;
-  overflow-x: auto;
-  font-family: "IBM Plex Sans", sans-serif;
-  line-height: 1.75;
-}
-
-.site-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 18px;
-}
-
-.site-footer a {
-  font-weight: 700;
-  color: var(--blue-deep);
 }
 
 @keyframes rise-in {
@@ -704,8 +681,7 @@ img {
     padding-top: 18px;
   }
 
-  .site-header,
-  .site-footer {
+  .site-header {
     flex-direction: column;
     align-items: flex-start;
   }
@@ -776,9 +752,7 @@ img {
   .benchmark-section,
   .detail-grid,
   .findings-section,
-  .comparison-strip,
-  .citation-section,
-  .site-footer {
+  .comparison-strip {
     animation: none;
   }
 

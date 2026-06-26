@@ -34,7 +34,6 @@
         <a href="#overview">Overview</a>
         <a href="#benchmark">Benchmark</a>
         <a href="#findings">Results</a>
-        <a href="#citation">Citation</a>
       </nav>
     </header>
 
@@ -246,7 +245,8 @@
               <span class="table-swipe-rail"><span class="table-swipe-thumb"></span></span>
             </div>
             <div class="table-scroll">
-              <table class="results-table results-table-wide">
+              <div class="table-width table-width-zero-shot">
+                <table class="results-table">
                 <thead>
                   <tr>
                     <th rowspan="2">Model</th>
@@ -451,7 +451,8 @@
                     <td>0.366</td>
                   </tr>
                 </tbody>
-              </table>
+                </table>
+              </div>
             </div>
           </article>
 
@@ -469,7 +470,8 @@
               <span class="table-swipe-rail"><span class="table-swipe-thumb"></span></span>
             </div>
             <div class="table-scroll">
-              <table class="results-table results-table-finetune">
+              <div class="table-width table-width-finetune">
+                <table class="results-table">
                 <thead>
                   <tr>
                     <th rowspan="2">Model</th>
@@ -524,7 +526,8 @@
                     <td>0.456</td>
                   </tr>
                 </tbody>
-              </table>
+                </table>
+              </div>
             </div>
           </article>
         </div>
@@ -541,28 +544,7 @@
         </article>
       </section>
 
-      <section class="citation-section" id="citation">
-        <div class="section-heading compact">
-          <p class="section-kicker">Citation</p>
-          <h2>Project citation draft</h2>
-        </div>
-
-        <div class="citation-card">
-          <pre>@article{tian2026uniref_uav,
-  title   = {UniRef-UAV: A Multimodal Benchmark for Universal Referring in UAV Imagery},
-  author  = {Haibin Tian and Huichao Xie and Xuelin Qian and Ruitao Lu and Junwei Han and Dingwen Zhang},
-  journal = {IEEE Transactions on Multimedia},
-  note    = {Under review},
-  year    = {2026}
-}</pre>
-        </div>
-      </section>
     </main>
-
-    <footer class="site-footer">
-      <p>UniRef-UAV benchmark homepage prototype based on the local LaTeX source.</p>
-      <a href="https://github.com/thb1314/UniRef">github.com/thb1314/UniRef</a>
-    </footer>
   </div>
 </body>
 </html>
