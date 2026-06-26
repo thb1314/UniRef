@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="table-debug-overlay" aria-live="polite">debug ready</div>
+  <div class="table-debug-overlay" aria-live="polite">script loaded</div>
   <div class="page-shell">
     <header class="site-header">
       <div class="brand-lockup">
@@ -570,7 +570,7 @@
   <script>
     const debugOverlay = document.querySelector(".table-debug-overlay");
     const setGlobalDebug = (text) => {
-      if (debugOverlay) debugOverlay.textContent = text || "debug ready";
+      if (debugOverlay) debugOverlay.textContent = text || "script loaded";
     };
     setGlobalDebug("script loaded");
 
@@ -654,6 +654,10 @@
           return;
         }
 
+        if (event.cancelable) {
+          event.preventDefault();
+        }
+
         const touch = event.touches[0];
         activeCard = card;
         state.startX = touch.clientX;
@@ -662,7 +666,7 @@
         state.axis = null;
         state.active = true;
       },
-      { passive: true, capture: true }
+      { passive: false, capture: true }
     );
 
     document.addEventListener(
