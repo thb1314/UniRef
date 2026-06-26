@@ -498,7 +498,6 @@ img {
   overflow-y: hidden;
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
   -webkit-tap-highlight-color: transparent;
   cursor: grab;
   border-radius: 18px;
