@@ -29,6 +29,7 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
+  overflow-x: hidden;
   font-family: "IBM Plex Sans", sans-serif;
   color: var(--ink);
   background:
@@ -523,7 +524,7 @@ img {
 
 .table-controls {
   display: none;
-  gap: 12px;
+  gap: 10px;
   margin: 12px 0 14px;
 }
 
@@ -533,50 +534,50 @@ img {
   line-height: 1.5;
 }
 
-.table-controls-main {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.table-scroll-range {
+  width: 100%;
+  margin: 0;
+  background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
-.table-control-button {
-  width: 40px;
-  height: 40px;
-  border: 1px solid rgba(19, 32, 51, 0.12);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.9);
-  color: var(--blue-deep);
-  font: inherit;
-  font-size: 1.1rem;
-  font-weight: 700;
-  cursor: pointer;
-  flex: 0 0 auto;
+.table-scroll-range:focus {
+  outline: none;
 }
 
-.table-control-button:disabled {
-  opacity: 0.35;
-  cursor: default;
-}
-
-.table-scrollbar {
-  position: relative;
-  flex: 1 1 auto;
+.table-scroll-range::-webkit-slider-runnable-track {
   height: 10px;
   border-radius: 999px;
-  background: rgba(19, 32, 51, 0.08);
-  overflow: hidden;
+  background: linear-gradient(90deg, rgba(13, 92, 192, 0.18), rgba(111, 59, 194, 0.2));
 }
 
-.table-scrollbar-thumb {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 24%;
-  height: 100%;
+.table-scroll-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 54px;
+  height: 18px;
+  margin-top: -4px;
+  border: none;
   border-radius: 999px;
   background: linear-gradient(90deg, var(--blue), var(--violet));
-  transform: translateX(0);
-  transition: transform 0.15s ease-out, width 0.15s ease-out;
+  box-shadow: 0 8px 22px rgba(13, 92, 192, 0.28);
+}
+
+.table-scroll-range::-moz-range-track {
+  height: 10px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(13, 92, 192, 0.18), rgba(111, 59, 194, 0.2));
+}
+
+.table-scroll-range::-moz-range-thumb {
+  width: 54px;
+  height: 18px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--blue), var(--violet));
+  box-shadow: 0 8px 22px rgba(13, 92, 192, 0.28);
 }
 
 .results-table {
@@ -750,9 +751,7 @@ img {
   }
 
   .button,
-  .site-nav a,
-  .table-scrollbar-thumb,
-  .table-control-button {
+  .site-nav a {
     transition: none;
   }
 }

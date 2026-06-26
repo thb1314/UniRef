@@ -241,18 +241,17 @@
             </div>
 
             <div class="table-controls" aria-label="Table navigation controls">
-              <div class="table-controls-main">
-                <button class="table-control-button" type="button" data-table-dir="-1" aria-label="Scroll table left">
-                  &larr;
-                </button>
-                <div class="table-scrollbar" aria-hidden="true">
-                  <span class="table-scrollbar-thumb"></span>
-                </div>
-                <button class="table-control-button" type="button" data-table-dir="1" aria-label="Scroll table right">
-                  &rarr;
-                </button>
-              </div>
-              <span class="table-swipe-label">Use arrows or swipe to view the full table</span>
+              <label class="table-swipe-label" for="zero-shot-scroll-range">Drag the slider to view the full table</label>
+              <input
+                id="zero-shot-scroll-range"
+                class="table-scroll-range"
+                type="range"
+                min="0"
+                max="100"
+                value="0"
+                step="1"
+                aria-label="Horizontal scrollbar for zero-shot evaluation table"
+              >
             </div>
             <div class="table-scroll">
               <div class="table-width table-width-zero-shot">
@@ -476,18 +475,17 @@
             </div>
 
             <div class="table-controls" aria-label="Table navigation controls">
-              <div class="table-controls-main">
-                <button class="table-control-button" type="button" data-table-dir="-1" aria-label="Scroll table left">
-                  &larr;
-                </button>
-                <div class="table-scrollbar" aria-hidden="true">
-                  <span class="table-scrollbar-thumb"></span>
-                </div>
-                <button class="table-control-button" type="button" data-table-dir="1" aria-label="Scroll table right">
-                  &rarr;
-                </button>
-              </div>
-              <span class="table-swipe-label">Use arrows or swipe to view the full table</span>
+              <label class="table-swipe-label" for="finetune-scroll-range">Drag the slider to view the full table</label>
+              <input
+                id="finetune-scroll-range"
+                class="table-scroll-range"
+                type="range"
+                min="0"
+                max="100"
+                value="0"
+                step="1"
+                aria-label="Horizontal scrollbar for fine-tune evaluation table"
+              >
             </div>
             <div class="table-scroll">
               <div class="table-width table-width-finetune">
@@ -571,36 +569,21 @@
 
     for (const card of tableCards) {
       const scroller = card.querySelector(".table-scroll");
-      const thumb = card.querySelector(".table-scrollbar-thumb");
-      const buttons = card.querySelectorAll("[data-table-dir]");
+      const slider = card.querySelector(".table-scroll-range");
       const controls = card.querySelector(".table-controls");
 
       const updateTableControls = () => {
         const maxScroll = Math.max(scroller.scrollWidth - scroller.clientWidth, 0);
+        const needsScroll = maxScroll > 0;
 
-        const visibleRatio = Math.min(scroller.clientWidth / scroller.scrollWidth, 1);
-        const thumbWidth = Math.max(Math.min(visibleRatio * 100, 100), 18);
-        const maxOffset = 100 - thumbWidth;
-        const progress = maxScroll > 0 ? scroller.scrollLeft / maxScroll : 0;
-
-        thumb.style.width = thumbWidth + "%";
-        thumb.style.transform = "translateX(" + (progress * maxOffset) + "%)";
-
-        for (const button of buttons) {
-          const dir = Number(button.dataset.tableDir);
-          button.disabled = dir < 0 ? scroller.scrollLeft <= 1 : scroller.scrollLeft >= maxScroll - 1;
-        }
+        controls.hidden = !needsScroll;
+        slider.max = String(Math.max(Math.round(maxScroll), 1));
+        slider.value = String(Math.min(Math.round(scroller.scrollLeft), Math.round(maxScroll)));
       };
 
-      for (const button of buttons) {
-        button.addEventListener("click", () => {
-          const dir = Number(button.dataset.tableDir);
-          scroller.scrollBy({
-            left: dir * scroller.clientWidth * 0.72,
-            behavior: "smooth"
-          });
-        });
-      }
+      slider.addEventListener("input", () => {
+        scroller.scrollLeft = Number(slider.value);
+      });
 
       scroller.addEventListener("scroll", updateTableControls, { passive: true });
       window.addEventListener("resize", updateTableControls);
