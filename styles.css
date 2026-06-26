@@ -498,6 +498,8 @@ img {
   overflow-y: hidden;
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
+  -webkit-tap-highlight-color: transparent;
+  cursor: grab;
   border-radius: 18px;
   border: 1px solid rgba(19, 32, 51, 0.08);
   background: rgba(255, 255, 255, 0.82);
@@ -527,6 +529,10 @@ img {
 .table-scroll::-webkit-scrollbar-thumb {
   background: linear-gradient(90deg, var(--blue), var(--violet));
   border-radius: 999px;
+}
+
+.table-scroll.is-dragging {
+  cursor: grabbing;
 }
 
 .table-controls {

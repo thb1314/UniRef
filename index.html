@@ -564,6 +564,7 @@
 
     </main>
   </div>
+  <script src="https://unpkg.com/scrollbooster@3.0.2/dist/scrollbooster.min.js"></script>
   <script>
     const tableCards = document.querySelectorAll(".table-card");
 
@@ -571,6 +572,7 @@
       const scroller = card.querySelector(".table-scroll");
       const slider = card.querySelector(".table-scroll-range");
       const controls = card.querySelector(".table-controls");
+      const content = scroller.querySelector(".table-width");
 
       const updateTableControls = () => {
         const maxScroll = Math.max(scroller.scrollWidth - scroller.clientWidth, 0);
@@ -584,6 +586,26 @@
       slider.addEventListener("input", () => {
         scroller.scrollLeft = Number(slider.value);
       });
+
+      if (window.ScrollBooster && content) {
+        const tableBooster = new ScrollBooster({
+          viewport: scroller,
+          content,
+          direction: "horizontal",
+          scrollMode: "native",
+          bounce: false,
+          lockScrollOnDragDirection: "horizontal",
+          dragDirectionTolerance: 45,
+          emulateScroll: true,
+          preventDefaultOnEmulateScroll: "horizontal",
+          pointerDownPreventDefault: false,
+          onPointerDown: () => scroller.classList.add("is-dragging"),
+          onPointerUp: () => scroller.classList.remove("is-dragging"),
+          onUpdate: updateTableControls,
+        });
+
+        window.addEventListener("resize", () => tableBooster.updateMetrics());
+      }
 
       scroller.addEventListener("scroll", updateTableControls, { passive: true });
       window.addEventListener("resize", updateTableControls);
