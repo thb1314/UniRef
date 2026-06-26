@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniRef-UAV | Universal Referring Benchmark for UAV Imagery</title>
+  <meta
+    name="description"
+    content="UniRef-UAV is a multimodal benchmark for universal referring in UAV imagery, covering text-only, image-only, and text+image queries with modality-aware 0/1/N grounding outputs."
+  >
+  <meta property="og:title" content="UniRef-UAV">
+  <meta
+    property="og:description"
+    content="A multimodal benchmark for universal referring in UAV imagery."
+  >
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/uniref-overview.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap"
+    rel="stylesheet"
+  >
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="site-header">
+      <div class="brand-lockup">
+        <span class="brand-pill">TMM Submission</span>
+        <span class="brand-pill brand-pill-secondary">UAV Grounding Benchmark</span>
+      </div>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="#overview">Overview</a>
+        <a href="#benchmark">Benchmark</a>
+        <a href="#findings">Findings</a>
+        <a href="#citation">Citation</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">UniRef-UAV</p>
+          <h1>A Multimodal Benchmark for Universal Referring in UAV Imagery</h1>
+          <p class="hero-lede">
+            UniRef-UAV expands UAV referring along two axes at once: query modality and output
+            cardinality. It supports text-only, image-only, and text+image queries, while grounding
+            zero, one, or many targets under modality-aware constraints.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="https://github.com/thb1314/UniRef">View Repository</a>
+            <a class="button button-secondary" href="#overview">See the Benchmark</a>
+          </div>
+        </div>
+
+        <aside class="hero-aside">
+          <div class="aside-card aside-card-highlight">
+            <p class="aside-label">What this page represents</p>
+            <p class="aside-text">
+              A benchmark homepage distilled directly from the local LaTeX source of the UniRef-UAV
+              TMM submission.
+            </p>
+          </div>
+          <div class="aside-card">
+            <p class="aside-label">Release scope</p>
+            <p class="aside-text">
+              The paper describes the public release of annotations, query crops or images,
+              train/validation/test splits, evaluation scripts, and the UAV-URNet baseline.
+            </p>
+          </div>
+        </aside>
+      </section>
+
+      <section class="stats-band" aria-label="Benchmark stats">
+        <article class="stat-card">
+          <span class="stat-value">22</span>
+          <span class="stat-label">public UAV source datasets</span>
+        </article>
+        <article class="stat-card">
+          <span class="stat-value">48,470</span>
+          <span class="stat-label">unique benchmark images</span>
+        </article>
+        <article class="stat-card">
+          <span class="stat-value">156,987</span>
+          <span class="stat-label">task-ready base queries</span>
+        </article>
+        <article class="stat-card">
+          <span class="stat-value">3</span>
+          <span class="stat-label">query forms with 0/1/N grounding</span>
+        </article>
+      </section>
+
+      <section class="overview-section" id="overview">
+        <div class="section-heading">
+          <p class="section-kicker">Introduction Figure</p>
+          <h2>The full task space in one view</h2>
+          <p>
+            This figure comes directly from the paper introduction. It summarizes the three query
+            modalities, modality-aware output cardinality, visual-query domain settings, and the
+            benchmark's representative use cases.
+          </p>
+        </div>
+
+        <figure class="overview-figure">
+          <img
+            src="assets/uniref-overview.png"
+            alt="Introduction overview figure for the UniRef-UAV benchmark."
+          >
+          <figcaption>
+            Red boxes denote grounded target instances. Text-only and text+image queries support
+            no-target, single-target, and multi-target grounding, while image-only queries focus on
+            existence-aware single-instance grounding.
+          </figcaption>
+        </figure>
+      </section>
+
+      <section class="benchmark-section" id="benchmark">
+        <div class="section-heading compact">
+          <p class="section-kicker">Benchmark Design</p>
+          <h2>Built for the real failure modes of UAV referring</h2>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature-card feature-card-blue">
+            <span class="feature-tag">Query space</span>
+            <h3>Three complementary query modes</h3>
+            <p>
+              UniRef-UAV covers text-only, image-only, and text+image referring, so the benchmark
+              can test semantic description, visual prototype matching, and multimodal
+              disambiguation in one framework.
+            </p>
+            <ul class="chip-list" aria-label="Query modes">
+              <li>T</li>
+              <li>V</li>
+              <li>T+V</li>
+            </ul>
+          </article>
+
+          <article class="feature-card feature-card-green">
+            <span class="feature-tag">Output space</span>
+            <h3>Variable-cardinality grounding</h3>
+            <p>
+              Text-only and text+image queries allow zero, one, or many targets. Image-only queries
+              are constrained to 0/1 outputs because pure visual prototypes are ambiguous for
+              unrestricted multi-instance grounding.
+            </p>
+            <ul class="chip-list" aria-label="Cardinality modes">
+              <li>0</li>
+              <li>1</li>
+              <li>N</li>
+            </ul>
+          </article>
+
+          <article class="feature-card feature-card-violet">
+            <span class="feature-tag">Domain challenge</span>
+            <h3>In-domain and cross-domain visual queries</h3>
+            <p>
+              Visual-query evaluation is split into in-domain and cross-domain settings to expose how
+              well models generalize when the support image comes from a matching UAV scene or from
+              an external web domain.
+            </p>
+          </article>
+
+          <article class="feature-card feature-card-amber">
+            <span class="feature-tag">Scale</span>
+            <h3>Large enough to matter</h3>
+            <p>
+              The benchmark aggregates 48,470 images and 156,987 base queries from 22 public UAV
+              datasets spanning traffic, low-altitude flight, and open-field aerial scenes.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="detail-grid">
+        <article class="detail-panel">
+          <p class="panel-kicker">Why this task is different</p>
+          <h3>Classical REC assumptions break in aerial scenes</h3>
+          <p>
+            UAV imagery brings dense distractors, tiny targets, weak texture, broad scene coverage,
+            and naturally variable target counts. A single text expression with a guaranteed
+            one-target output is too narrow for that operating regime.
+          </p>
+        </article>
+
+        <article class="detail-panel">
+          <p class="panel-kicker">How it is evaluated</p>
+          <h3>Exact-set correctness instead of loose overlap alone</h3>
+          <p>
+            UniRef-UAV follows a GREC-style protocol with exact set matching. The paper reports
+            P@(F1=1, IoU&gt;=0.5) for target-present samples and N-acc for no-target samples, forcing
+            models to handle both localization and output-cardinality correctness.
+          </p>
+        </article>
+      </section>
+
+      <section class="findings-section" id="findings">
+        <div class="section-heading compact">
+          <p class="section-kicker">Representative Findings</p>
+          <h2>What the paper shows on top of the benchmark release</h2>
+        </div>
+
+        <div class="findings-grid">
+          <article class="finding-card">
+            <span class="finding-metric">54.6% / 93.5%</span>
+            <h3>UAV-URNet establishes a stable task-specific baseline</h3>
+            <p>
+              In the text+image matched-setting reported in the paper, UAV-URNet reaches 54.6%
+              exact-set precision and 93.5% no-target accuracy, offering a lightweight baseline for
+              multimodal UAV universal referring.
+            </p>
+          </article>
+
+          <article class="finding-card">
+            <span class="finding-metric">75.3% vs 58.2%</span>
+            <h3>In-domain visual queries remain easier than cross-domain ones</h3>
+            <p>
+              Image-only UAV-URNet evaluation shows a large gap between in-domain and cross-domain
+              visual queries, confirming that prototype domain shift is a core benchmark challenge.
+            </p>
+          </article>
+
+          <article class="finding-card">
+            <span class="finding-metric">3 modalities, one query space</span>
+            <h3>Merged training improves modality coverage</h3>
+            <p>
+              The paper's analysis indicates that different query forms provide complementary
+              supervision and help UAV-URNet learn a more unified query-target alignment space.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="comparison-strip">
+        <article class="strip-panel">
+          <p class="strip-title">Cardinality buckets</p>
+          <p class="strip-value">11,502 no-target / 110,869 single-target / 34,616 multi-target</p>
+        </article>
+        <article class="strip-panel">
+          <p class="strip-title">Benchmark emphasis</p>
+          <p class="strip-value">multimodal UAV grounding, absent-target reasoning, and flexible outputs</p>
+        </article>
+      </section>
+
+      <section class="citation-section" id="citation">
+        <div class="section-heading compact">
+          <p class="section-kicker">Citation</p>
+          <h2>Project citation draft</h2>
+        </div>
+
+        <div class="citation-card">
+          <pre>@article{tian2026uniref_uav,
+  title   = {UniRef-UAV: A Multimodal Benchmark for Universal Referring in UAV Imagery},
+  author  = {Haibin Tian and Huichao Xie and Xuelin Qian and Ruitao Lu and Junwei Han and Dingwen Zhang},
+  journal = {IEEE Transactions on Multimedia},
+  note    = {Under review},
+  year    = {2026}
+}</pre>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>UniRef-UAV benchmark homepage prototype generated from the local LaTeX source.</p>
+      <a href="https://github.com/thb1314/UniRef">github.com/thb1314/UniRef</a>
+    </footer>
+  </div>
+</body>
+</html>
