@@ -560,6 +560,16 @@ img {
   margin: 12px 0 14px;
 }
 
+.table-debug-badge {
+  display: block;
+  min-height: 18px;
+  margin: 8px 0 10px;
+  color: var(--amber);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
 .table-scroll-hint {
   display: none;
   margin-top: 10px;
@@ -768,6 +778,10 @@ img {
   }
 
   .table-scroll-hint {
+    display: block;
+  }
+
+  .table-debug-badge {
     display: block;
   }
 

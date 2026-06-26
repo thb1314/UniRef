@@ -241,6 +241,7 @@
             </div>
 
             <div class="table-scroll-hint">Swipe horizontally to view the full table</div>
+            <div class="table-debug-badge" aria-live="polite"></div>
             <div class="table-controls" aria-label="Table navigation controls">
               <label class="table-swipe-label" for="zero-shot-scroll-range">Swipe horizontally or use the slider below to view the full table</label>
               <input
@@ -476,6 +477,7 @@
             </div>
 
             <div class="table-scroll-hint">Swipe horizontally to view the full table</div>
+            <div class="table-debug-badge" aria-live="polite"></div>
             <div class="table-controls" aria-label="Table navigation controls">
               <label class="table-swipe-label" for="finetune-scroll-range">Swipe horizontally or use the slider below to view the full table</label>
               <input
@@ -601,11 +603,16 @@
       let touchStartX = 0;
       let touchStartY = 0;
       let touchStartPosition = 0;
+      const debugBadge = card.querySelector(".table-debug-badge");
+      const setDebug = (text) => {
+        if (debugBadge) debugBadge.textContent = text;
+      };
 
       const resetTouchState = () => {
         touchActive = false;
         touchAxis = null;
         scroller.classList.remove("is-dragging");
+        setDebug("");
       };
 
       document.addEventListener(
@@ -625,6 +632,7 @@
           touchStartPosition = positionX;
           touchAxis = null;
           touchActive = true;
+          setDebug("touchstart");
         },
         { passive: true, capture: true }
       );
@@ -648,6 +656,7 @@
             }
 
             touchAxis = absX > absY * 0.8 ? "x" : "y";
+            setDebug(touchAxis === "x" ? "axis:x" : "axis:y");
             if (touchAxis === "x") {
               scroller.classList.add("is-dragging");
             } else {
@@ -664,6 +673,7 @@
             event.preventDefault();
           }
           event.stopPropagation();
+          setDebug(`move:${Math.round(deltaX)}`);
           renderPosition(touchStartPosition - deltaX);
         },
         { passive: false, capture: true }
@@ -687,6 +697,7 @@
         mouseStartPosition = positionX;
         mouseDragging = true;
         scroller.classList.add("is-dragging");
+        setDebug("pointerdown");
 
         if (scroller.setPointerCapture) {
           scroller.setPointerCapture(pointerId);
@@ -699,6 +710,7 @@
         }
 
         event.preventDefault();
+        setDebug(`pointermove:${Math.round(event.clientX - mouseStartX)}`);
         renderPosition(mouseStartPosition - (event.clientX - mouseStartX));
       });
 
@@ -706,6 +718,7 @@
         pointerId = null;
         mouseDragging = false;
         scroller.classList.remove("is-dragging");
+        setDebug("");
       };
 
       scroller.addEventListener("pointerup", resetMouseState);
