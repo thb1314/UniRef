@@ -33,7 +33,7 @@
       <nav class="site-nav" aria-label="Primary">
         <a href="#overview">Overview</a>
         <a href="#benchmark">Benchmark</a>
-        <a href="#findings">Findings</a>
+        <a href="#findings">Results</a>
         <a href="#citation">Citation</a>
       </nav>
     </header>
@@ -230,6 +230,296 @@
             </p>
           </article>
         </div>
+
+        <div class="results-stack">
+          <article class="table-card">
+            <div class="table-header">
+              <div>
+                <p class="table-kicker">Zero-shot Evaluation</p>
+                <h3>Representative methods across all three query settings</h3>
+              </div>
+              <p class="table-note">Metrics: P@(F1=1, IoU&gt;=0.5) and N-acc. -- means unsupported.</p>
+            </div>
+
+            <div class="table-scroll">
+              <table class="results-table results-table-wide">
+                <thead>
+                  <tr>
+                    <th rowspan="2">Model</th>
+                    <th colspan="2">Text-only</th>
+                    <th colspan="2">Image-only</th>
+                    <th colspan="2">Text+Image</th>
+                  </tr>
+                  <tr>
+                    <th>P</th>
+                    <th>N-acc</th>
+                    <th>P</th>
+                    <th>N-acc</th>
+                    <th>P</th>
+                    <th>N-acc</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="group-row">
+                    <td colspan="7">2+1 single-target transformer</td>
+                  </tr>
+                  <tr>
+                    <td>TransVG</td>
+                    <td>0.034</td>
+                    <td>0.000</td>
+                    <td>--</td>
+                    <td>--</td>
+                    <td>--</td>
+                    <td>--</td>
+                  </tr>
+                  <tr>
+                    <td>CLIP-VG</td>
+                    <td>0.052</td>
+                    <td>0.000</td>
+                    <td>--</td>
+                    <td>--</td>
+                    <td>--</td>
+                    <td>--</td>
+                  </tr>
+                  <tr>
+                    <td>SimVG</td>
+                    <td>0.045</td>
+                    <td>0.002</td>
+                    <td>--</td>
+                    <td>--</td>
+                    <td>--</td>
+                    <td>--</td>
+                  </tr>
+
+                  <tr class="group-row">
+                    <td colspan="7">Detection-style (2+2) transformer</td>
+                  </tr>
+                  <tr>
+                    <td>MMGroundingDINO</td>
+                    <td>0.127</td>
+                    <td>0.964</td>
+                    <td>--</td>
+                    <td>--</td>
+                    <td>--</td>
+                    <td>--</td>
+                  </tr>
+                  <tr>
+                    <td>MDETR</td>
+                    <td>0.049</td>
+                    <td>0.024</td>
+                    <td>--</td>
+                    <td>--</td>
+                    <td>--</td>
+                    <td>--</td>
+                  </tr>
+
+                  <tr class="group-row">
+                    <td colspan="7">General-purpose MLLM</td>
+                  </tr>
+                  <tr>
+                    <td>Qwen3.6-27B</td>
+                    <td>0.205</td>
+                    <td>0.030</td>
+                    <td>0.175</td>
+                    <td>0.872</td>
+                    <td>0.585</td>
+                    <td>0.828</td>
+                  </tr>
+                  <tr>
+                    <td>GLM-4.6V-Flash</td>
+                    <td>0.131</td>
+                    <td>0.076</td>
+                    <td>0.581</td>
+                    <td>0.003</td>
+                    <td>0.484</td>
+                    <td>0.060</td>
+                  </tr>
+                  <tr>
+                    <td>MiMo-VL-7B-RL</td>
+                    <td>0.047</td>
+                    <td>0.000</td>
+                    <td>0.105</td>
+                    <td>0.000</td>
+                    <td>0.095</td>
+                    <td>0.000</td>
+                  </tr>
+                  <tr>
+                    <td>InternVL3.5-38B</td>
+                    <td>0.148</td>
+                    <td>0.006</td>
+                    <td>0.441</td>
+                    <td>0.147</td>
+                    <td>0.384</td>
+                    <td>0.233</td>
+                  </tr>
+                  <tr>
+                    <td>GLM-4.6V-FP8</td>
+                    <td>0.186</td>
+                    <td>0.122</td>
+                    <td>0.611</td>
+                    <td>0.000</td>
+                    <td>0.505</td>
+                    <td>0.087</td>
+                  </tr>
+                  <tr>
+                    <td>Gemma-4-31B-it</td>
+                    <td>0.204</td>
+                    <td>0.840</td>
+                    <td>0.553</td>
+                    <td>0.375</td>
+                    <td>0.462</td>
+                    <td>0.837</td>
+                  </tr>
+
+                  <tr class="group-row">
+                    <td colspan="7">Grounding-oriented MLLM</td>
+                  </tr>
+                  <tr>
+                    <td>LLaVA-Grounding</td>
+                    <td>0.123</td>
+                    <td>0.164</td>
+                    <td>0.158</td>
+                    <td>0.427</td>
+                    <td>0.190</td>
+                    <td>0.204</td>
+                  </tr>
+                  <tr>
+                    <td>GLaMM</td>
+                    <td>0.098</td>
+                    <td>0.203</td>
+                    <td>0.094</td>
+                    <td>0.024</td>
+                    <td>0.210</td>
+                    <td>0.078</td>
+                  </tr>
+                  <tr>
+                    <td>Ferret-v2</td>
+                    <td>0.129</td>
+                    <td>0.536</td>
+                    <td>0.077</td>
+                    <td>1.000</td>
+                    <td>0.060</td>
+                    <td>1.000</td>
+                  </tr>
+                  <tr>
+                    <td>KOSMOS-2</td>
+                    <td>0.097</td>
+                    <td>0.000</td>
+                    <td>--</td>
+                    <td>--</td>
+                    <td>--</td>
+                    <td>--</td>
+                  </tr>
+                  <tr>
+                    <td>Griffon</td>
+                    <td>0.011</td>
+                    <td>0.011</td>
+                    <td>0.061</td>
+                    <td>0.741</td>
+                    <td>0.040</td>
+                    <td>0.628</td>
+                  </tr>
+                  <tr>
+                    <td>Rex-Omni</td>
+                    <td>0.121</td>
+                    <td>0.185</td>
+                    <td>0.267</td>
+                    <td>0.028</td>
+                    <td>0.278</td>
+                    <td>0.042</td>
+                  </tr>
+                  <tr>
+                    <td>Rex-Seek</td>
+                    <td>0.142</td>
+                    <td>0.006</td>
+                    <td>0.451</td>
+                    <td>0.028</td>
+                    <td>0.409</td>
+                    <td>0.000</td>
+                  </tr>
+                  <tr>
+                    <td>LocateAnything-3B</td>
+                    <td>0.165</td>
+                    <td>0.437</td>
+                    <td>0.018</td>
+                    <td>0.018</td>
+                    <td>0.258</td>
+                    <td>0.366</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="table-card">
+            <div class="table-header">
+              <div>
+                <p class="table-kicker">Fine-tune Evaluation</p>
+                <h3>UAV-URNet versus lightweight general-purpose MLLM</h3>
+              </div>
+              <p class="table-note">Merged training and matched training are both shown as reported in the paper.</p>
+            </div>
+
+            <div class="table-scroll">
+              <table class="results-table results-table-finetune">
+                <thead>
+                  <tr>
+                    <th rowspan="2">Model</th>
+                    <th colspan="2">Text-only</th>
+                    <th colspan="2">Image-only</th>
+                    <th colspan="2">Text+Image</th>
+                    <th colspan="2">Merged</th>
+                  </tr>
+                  <tr>
+                    <th>P</th>
+                    <th>N-acc</th>
+                    <th>P</th>
+                    <th>N-acc</th>
+                    <th>P</th>
+                    <th>N-acc</th>
+                    <th>P</th>
+                    <th>N-acc</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>UAV-URNet (matched train)</td>
+                    <td>0.518</td>
+                    <td>0.975</td>
+                    <td>0.582</td>
+                    <td>0.299</td>
+                    <td>0.546</td>
+                    <td>0.935</td>
+                    <td>--</td>
+                    <td>--</td>
+                  </tr>
+                  <tr>
+                    <td>UAV-URNet (merged train)</td>
+                    <td>0.528</td>
+                    <td>0.964</td>
+                    <td>0.691</td>
+                    <td>0.254</td>
+                    <td>0.590</td>
+                    <td>0.871</td>
+                    <td>0.572</td>
+                    <td>0.871</td>
+                  </tr>
+                  <tr>
+                    <td>Qwen3.5-0.8b (merged train)</td>
+                    <td>0.320</td>
+                    <td>0.492</td>
+                    <td>0.772</td>
+                    <td>0.324</td>
+                    <td>0.675</td>
+                    <td>0.340</td>
+                    <td>0.485</td>
+                    <td>0.456</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+        </div>
       </section>
 
       <section class="comparison-strip">
@@ -262,7 +552,7 @@
     </main>
 
     <footer class="site-footer">
-      <p>UniRef-UAV benchmark homepage prototype generated from the local LaTeX source.</p>
+      <p>UniRef-UAV benchmark homepage prototype based on the local LaTeX source.</p>
       <a href="https://github.com/thb1314/UniRef">github.com/thb1314/UniRef</a>
     </footer>
   </div>
