@@ -242,17 +242,21 @@
 
             <div class="table-scroll-hint">Swipe left or right to see more columns</div>
             <div class="table-controls" aria-label="Table navigation controls">
-              <label class="table-swipe-label" for="zero-shot-scroll-range">Swipe horizontally or use the slider below to view the full table</label>
-              <input
+              <label class="table-swipe-label" for="zero-shot-scroll-range">Drag the bar left/right to see more columns</label>
+              <div
                 id="zero-shot-scroll-range"
-                class="table-scroll-range"
-                type="range"
-                min="0"
-                max="100"
-                value="0"
-                step="1"
+                class="table-scrubber"
+                role="slider"
                 aria-label="Horizontal scrollbar for zero-shot evaluation table"
+                aria-orientation="horizontal"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+                tabindex="0"
               >
+                <div class="table-scrubber-track"></div>
+                <div class="table-scrubber-thumb"></div>
+              </div>
             </div>
             <div class="table-scroll">
               <div class="table-width table-width-zero-shot">
@@ -477,17 +481,21 @@
 
             <div class="table-scroll-hint">Swipe left or right to see more columns</div>
             <div class="table-controls" aria-label="Table navigation controls">
-              <label class="table-swipe-label" for="finetune-scroll-range">Swipe horizontally or use the slider below to view the full table</label>
-              <input
+              <label class="table-swipe-label" for="finetune-scroll-range">Drag the bar left/right to see more columns</label>
+              <div
                 id="finetune-scroll-range"
-                class="table-scroll-range"
-                type="range"
-                min="0"
-                max="100"
-                value="0"
-                step="1"
+                class="table-scrubber"
+                role="slider"
                 aria-label="Horizontal scrollbar for fine-tune evaluation table"
+                aria-orientation="horizontal"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+                tabindex="0"
               >
+                <div class="table-scrubber-track"></div>
+                <div class="table-scrubber-thumb"></div>
+              </div>
             </div>
             <div class="table-scroll">
               <div class="table-width table-width-finetune">
@@ -571,18 +579,94 @@
 
     for (const card of tableCards) {
       const scroller = card.querySelector(".table-scroll");
-      const slider = card.querySelector(".table-scroll-range");
+      const scrubber = card.querySelector(".table-scrubber");
+      const thumb = card.querySelector(".table-scrubber-thumb");
       const controls = card.querySelector(".table-controls");
+      let dragging = false;
+      let dragPointerId = null;
+      let maxScroll = 0;
+      let thumbWidth = 72;
+      let thumbMax = 0;
 
-      const syncControls = () => {
-        const maxScroll = Math.max(scroller.scrollWidth - scroller.clientWidth, 0);
-        controls.hidden = maxScroll <= 0;
-        slider.max = String(Math.max(maxScroll, 1));
-        slider.value = String(Math.round(scroller.scrollLeft));
+      const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+      const measure = () => {
+        maxScroll = Math.max(scroller.scrollWidth - scroller.clientWidth, 0);
+        const trackWidth = scrubber.clientWidth || 1;
+        const proportionalWidth = trackWidth * (scroller.clientWidth / Math.max(scroller.scrollWidth, scroller.clientWidth));
+        thumbWidth = clamp(proportionalWidth, 72, trackWidth);
+        thumbMax = Math.max(trackWidth - thumbWidth, 0);
       };
 
-      slider.addEventListener("input", () => {
-        scroller.scrollLeft = Number(slider.value);
+      const renderThumb = () => {
+        const thumbLeft = maxScroll > 0 ? (scroller.scrollLeft / maxScroll) * thumbMax : 0;
+        thumb.style.width = `${Math.round(thumbWidth)}px`;
+        thumb.style.transform = `translate3d(${Math.round(thumbLeft)}px, -50%, 0)`;
+        scrubber.setAttribute("aria-valuemin", "0");
+        scrubber.setAttribute("aria-valuemax", String(Math.round(maxScroll)));
+        scrubber.setAttribute("aria-valuenow", String(Math.round(scroller.scrollLeft)));
+      };
+
+      const syncControls = () => {
+        measure();
+        controls.hidden = maxScroll <= 0;
+        renderThumb();
+      };
+
+      const scrollFromClientX = (clientX) => {
+        const rect = scrubber.getBoundingClientRect();
+        const relativeX = clamp(clientX - rect.left - thumbWidth / 2, 0, thumbMax);
+        const ratio = thumbMax > 0 ? relativeX / thumbMax : 0;
+        scroller.scrollLeft = ratio * maxScroll;
+      };
+
+      scrubber.addEventListener("pointerdown", (event) => {
+        event.preventDefault();
+        measure();
+        dragging = true;
+        dragPointerId = event.pointerId;
+        scrubber.classList.add("is-dragging");
+
+        if (scrubber.setPointerCapture) {
+          scrubber.setPointerCapture(dragPointerId);
+        }
+
+        scrollFromClientX(event.clientX);
+      });
+
+      scrubber.addEventListener("pointermove", (event) => {
+        if (!dragging || event.pointerId !== dragPointerId) {
+          return;
+        }
+        event.preventDefault();
+        scrollFromClientX(event.clientX);
+      });
+
+      const stopDragging = (event) => {
+        if (!dragging) {
+          return;
+        }
+        if (event && event.pointerId !== undefined && dragPointerId !== null && event.pointerId !== dragPointerId) {
+          return;
+        }
+        dragging = false;
+        dragPointerId = null;
+        scrubber.classList.remove("is-dragging");
+      };
+
+      scrubber.addEventListener("pointerup", stopDragging);
+      scrubber.addEventListener("pointercancel", stopDragging);
+      scrubber.addEventListener("lostpointercapture", stopDragging);
+
+      scrubber.addEventListener("keydown", (event) => {
+        const step = Math.max(maxScroll / 12, 40);
+        if (event.key === "ArrowRight") {
+          event.preventDefault();
+          scroller.scrollLeft = Math.min(scroller.scrollLeft + step, maxScroll);
+        } else if (event.key === "ArrowLeft") {
+          event.preventDefault();
+          scroller.scrollLeft = Math.max(scroller.scrollLeft - step, 0);
+        }
       });
 
       scroller.addEventListener("scroll", syncControls, { passive: true });
