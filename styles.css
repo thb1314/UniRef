@@ -495,11 +495,7 @@ img {
 
 .table-scroll {
   position: relative;
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  -webkit-tap-highlight-color: transparent;
-  cursor: grab;
+  overflow: hidden;
   border-radius: 18px;
   border: 1px solid rgba(19, 32, 51, 0.08);
   background: rgba(255, 255, 255, 0.82);
@@ -520,6 +516,12 @@ img {
 
 .table-width-finetune {
   width: 880px;
+}
+
+.table-scroll-content {
+  display: inline-block;
+  white-space: normal;
+  min-width: max-content;
 }
 
 .table-scroll::-webkit-scrollbar {
@@ -602,9 +604,6 @@ img {
   outline-offset: 3px;
 }
 
-.table-scrubber.is-dragging .table-scrubber-thumb {
-  box-shadow: 0 12px 28px rgba(13, 92, 192, 0.38);
-}
 
 .results-table {
   width: 100%;
@@ -753,9 +752,7 @@ img {
   }
 
   .table-scroll {
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
+    overflow: hidden;
   }
 
   .table-scroll::-webkit-scrollbar {
@@ -797,6 +794,3 @@ img {
   }
 }
 
-.table-scrubber.is-dragging .table-scrubber-thumb {
-  box-shadow: 0 12px 28px rgba(13, 92, 192, 0.38);
-}
