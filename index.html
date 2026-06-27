@@ -587,11 +587,13 @@
       let maxScroll = 0;
       let thumbWidth = 72;
       let thumbMax = 0;
+      let scrubberRect = null;
 
       const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
       const measure = () => {
         maxScroll = Math.max(scroller.scrollWidth - scroller.clientWidth, 0);
+        scrubberRect = scrubber.getBoundingClientRect();
         const trackWidth = scrubber.clientWidth || 1;
         const proportionalWidth = trackWidth * (scroller.clientWidth / Math.max(scroller.scrollWidth, scroller.clientWidth));
         thumbWidth = clamp(proportionalWidth, 72, trackWidth);
@@ -614,7 +616,7 @@
       };
 
       const scrollFromClientX = (clientX) => {
-        const rect = scrubber.getBoundingClientRect();
+        const rect = scrubberRect || scrubber.getBoundingClientRect();
         const relativeX = clamp(clientX - rect.left - thumbWidth / 2, 0, thumbMax);
         const ratio = thumbMax > 0 ? relativeX / thumbMax : 0;
         scroller.scrollLeft = ratio * maxScroll;
@@ -657,6 +659,42 @@
       scrubber.addEventListener("pointerup", stopDragging);
       scrubber.addEventListener("pointercancel", stopDragging);
       scrubber.addEventListener("lostpointercapture", stopDragging);
+
+      scrubber.addEventListener("touchstart", (event) => {
+        if (event.touches.length !== 1) {
+          return;
+        }
+        event.preventDefault();
+        measure();
+        dragging = true;
+        dragPointerId = "touch";
+        scrubber.classList.add("is-dragging");
+        scrollFromClientX(event.touches[0].clientX);
+      }, { passive: false });
+
+      scrubber.addEventListener("touchmove", (event) => {
+        if (!dragging || dragPointerId !== "touch" || event.touches.length !== 1) {
+          return;
+        }
+        event.preventDefault();
+        scrollFromClientX(event.touches[0].clientX);
+      }, { passive: false });
+
+      scrubber.addEventListener("touchend", () => {
+        if (dragPointerId === "touch") {
+          dragging = false;
+          dragPointerId = null;
+          scrubber.classList.remove("is-dragging");
+        }
+      });
+
+      scrubber.addEventListener("touchcancel", () => {
+        if (dragPointerId === "touch") {
+          dragging = false;
+          dragPointerId = null;
+          scrubber.classList.remove("is-dragging");
+        }
+      });
 
       scrubber.addEventListener("keydown", (event) => {
         const step = Math.max(maxScroll / 12, 40);
