@@ -494,6 +494,7 @@ img {
 }
 
 .table-scroll {
+  position: relative;
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
@@ -504,8 +505,13 @@ img {
   background: rgba(255, 255, 255, 0.82);
 }
 
-.table-width {
-  min-width: 100%;
+.table-scroll::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 28px;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.82));
 }
 
 .table-width-zero-shot {
