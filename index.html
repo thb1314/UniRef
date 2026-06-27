@@ -578,7 +578,7 @@
 
     for (const card of tableCards) {
       const scroller = card.querySelector(".table-scroll");
-      const gestureLayer = card.querySelector(".table-gesture-layer");
+      const gestureLayer = scroller;
       const content = card.querySelector(".table-width");
       const slider = card.querySelector(".table-scroll-range");
       const controls = card.querySelector(".table-controls");
@@ -622,9 +622,6 @@
         if (event.touches.length !== 1 || getMaxScroll() <= 0) {
           return;
         }
-        if (event.cancelable) {
-          event.preventDefault();
-        }
         const touch = event.touches[0];
         startX = touch.clientX;
         startY = touch.clientY;
@@ -633,7 +630,7 @@
         active = true;
         axis = null;
         setGlobalDebug("touchstart");
-      }, { passive: false });
+      }, { passive: true });
 
       gestureLayer.addEventListener("touchmove", (event) => {
         if (!active || event.touches.length !== 1) {
@@ -642,6 +639,7 @@
         const touch = event.touches[0];
         const deltaX = touch.clientX - startX;
         const deltaY = touch.clientY - startY;
+        setGlobalDebug(`move raw:${Math.round(deltaX)},${Math.round(deltaY)}`);
         const absX = Math.abs(deltaX);
         const absY = Math.abs(deltaY);
 
@@ -666,11 +664,7 @@
           return;
         }
 
-        if (event.cancelable) {
-          event.preventDefault();
-        }
-        event.stopPropagation();
-        window.scrollTo({ top: clampWindowScroll(startWindowY - deltaY), behavior: "auto" });
+        setGlobalDebug(`axis:${axis}:pass`);
       }, { passive: false });
 
       gestureLayer.addEventListener("touchend", reset);
