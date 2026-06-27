@@ -585,10 +585,9 @@
           eventPassthrough: 'vertical',
           momentum: true,
           bounce: false,
-          probeType: 0,
           click: true,
           tap: 'tap',
-          bindToWrapper: true,
+          bindToWrapper: false,
           preventDefault: true,
           disableMouse: true,
           disableTouch: false,
@@ -596,6 +595,7 @@
       };
 
       window.addEventListener("resize", setupScroll);
+      window.addEventListener("load", setupScroll, { once: true });
       setupScroll();
     }
   </script>
