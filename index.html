@@ -549,6 +549,10 @@
   <script src="https://unpkg.com/better-scroll@2.5.1/dist/better-scroll.min.js"></script>
   <script>
     const tableCards = document.querySelectorAll(".table-card");
+    const BetterScrollFactory =
+      window.BetterScroll && typeof window.BetterScroll.createBScroll === "function"
+        ? window.BetterScroll
+        : null;
 
     for (const card of tableCards) {
       const wrapper = card.querySelector(".table-scroll-bscroll");
@@ -570,7 +574,7 @@
           return;
         }
 
-        if (!window.BScroll) {
+        if (!BetterScrollFactory) {
           return;
         }
 
@@ -579,14 +583,14 @@
           return;
         }
 
-        bs = new BScroll(wrapper, {
+        bs = BetterScrollFactory.createBScroll(wrapper, {
           scrollX: true,
           scrollY: false,
-          eventPassthrough: 'vertical',
+          eventPassthrough: "vertical",
           momentum: true,
           bounce: false,
           click: true,
-          tap: 'tap',
+          tap: "tap",
           bindToWrapper: false,
           preventDefault: true,
           disableMouse: true,
