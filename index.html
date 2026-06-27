@@ -24,7 +24,6 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="table-debug-overlay" aria-live="polite">script loaded</div>
   <div class="page-shell">
     <header class="site-header">
       <div class="brand-lockup">
@@ -568,150 +567,27 @@
     </main>
   </div>
   <script>
-    const debugOverlay = document.querySelector(".table-debug-overlay");
-    const setGlobalDebug = (text) => {
-      if (debugOverlay) debugOverlay.textContent = text || "script loaded";
-    };
-    setGlobalDebug("script loaded");
-
     const tableCards = document.querySelectorAll(".table-card");
 
     for (const card of tableCards) {
       const scroller = card.querySelector(".table-scroll");
-      const gestureLayer = scroller;
-      const content = card.querySelector(".table-width");
       const slider = card.querySelector(".table-scroll-range");
       const controls = card.querySelector(".table-controls");
-      let positionX = 0;
-      let active = false;
-      let axis = null;
-      let startX = 0;
-      let startY = 0;
-      let startPosition = 0;
-      let startWindowY = 0;
 
-      const getMaxScroll = () => Math.max(content.scrollWidth - scroller.clientWidth, 0);
-      const clampScroll = (value) => Math.min(Math.max(value, 0), getMaxScroll());
-      const clampWindowScroll = (value) => Math.min(Math.max(value, 0), Math.max(document.documentElement.scrollHeight - window.innerHeight, 0));
-
-      const renderPosition = (nextX) => {
-        positionX = clampScroll(nextX);
-        content.style.transform = `translate3d(${-positionX}px, 0, 0)`;
-        slider.value = String(Math.round(positionX));
-      };
-
-      const updateTableControls = () => {
-        const maxScroll = getMaxScroll();
+      const syncControls = () => {
+        const maxScroll = Math.max(scroller.scrollWidth - scroller.clientWidth, 0);
         controls.hidden = maxScroll <= 0;
-        slider.max = String(Math.max(Math.round(maxScroll), 1));
-        renderPosition(positionX);
+        slider.max = String(Math.max(maxScroll, 1));
+        slider.value = String(Math.round(scroller.scrollLeft));
       };
 
       slider.addEventListener("input", () => {
-        renderPosition(Number(slider.value));
+        scroller.scrollLeft = Number(slider.value);
       });
 
-      const reset = () => {
-        active = false;
-        axis = null;
-        scroller.classList.remove("is-dragging");
-        setGlobalDebug("script loaded");
-      };
-
-      gestureLayer.addEventListener("touchstart", (event) => {
-        if (event.touches.length !== 1 || getMaxScroll() <= 0) {
-          return;
-        }
-        const touch = event.touches[0];
-        startX = touch.clientX;
-        startY = touch.clientY;
-        startPosition = positionX;
-        startWindowY = window.scrollY;
-        active = true;
-        axis = null;
-        setGlobalDebug("touchstart");
-      }, { passive: true });
-
-      gestureLayer.addEventListener("touchmove", (event) => {
-        if (!active || event.touches.length !== 1) {
-          return;
-        }
-        const touch = event.touches[0];
-        const deltaX = touch.clientX - startX;
-        const deltaY = touch.clientY - startY;
-        setGlobalDebug(`move raw:${Math.round(deltaX)},${Math.round(deltaY)}`);
-        const absX = Math.abs(deltaX);
-        const absY = Math.abs(deltaY);
-
-        if (!axis) {
-          if (Math.max(absX, absY) < 4) {
-            return;
-          }
-          axis = absX > absY * 0.8 ? "x" : "y";
-          setGlobalDebug(`axis:${axis}`);
-          if (axis === "x") {
-            scroller.classList.add("is-dragging");
-          }
-        }
-
-        if (axis === "x") {
-          if (event.cancelable) {
-            event.preventDefault();
-          }
-          event.stopPropagation();
-          setGlobalDebug(`move:${Math.round(deltaX)}`);
-          renderPosition(startPosition - deltaX);
-          return;
-        }
-
-        setGlobalDebug(`axis:${axis}:pass`);
-      }, { passive: false });
-
-      gestureLayer.addEventListener("touchend", reset);
-      gestureLayer.addEventListener("touchcancel", reset);
-
-      let pointerId = null;
-      let mouseStartX = 0;
-      let mouseStartPosition = 0;
-      let mouseDragging = false;
-
-      gestureLayer.addEventListener("pointerdown", (event) => {
-        if (event.pointerType !== "mouse" || event.button !== 0 || getMaxScroll() <= 0) {
-          return;
-        }
-        pointerId = event.pointerId;
-        mouseStartX = event.clientX;
-        mouseStartPosition = positionX;
-        mouseDragging = true;
-        scroller.classList.add("is-dragging");
-        setGlobalDebug("pointerdown");
-        if (gestureLayer.setPointerCapture) {
-          gestureLayer.setPointerCapture(pointerId);
-        }
-      });
-
-      gestureLayer.addEventListener("pointermove", (event) => {
-        if (!mouseDragging || event.pointerId !== pointerId) {
-          return;
-        }
-        event.preventDefault();
-        setGlobalDebug(`pointermove:${Math.round(event.clientX - mouseStartX)}`);
-        renderPosition(mouseStartPosition - (event.clientX - mouseStartX));
-      });
-
-      const resetMouse = () => {
-        pointerId = null;
-        mouseDragging = false;
-        scroller.classList.remove("is-dragging");
-        setGlobalDebug("script loaded");
-      };
-
-      gestureLayer.addEventListener("pointerup", resetMouse);
-      gestureLayer.addEventListener("pointercancel", resetMouse);
-      gestureLayer.addEventListener("lostpointercapture", resetMouse);
-      gestureLayer.addEventListener("dragstart", (event) => event.preventDefault());
-      window.addEventListener("resize", updateTableControls);
-      updateTableControls();
+      scroller.addEventListener("scroll", syncControls, { passive: true });
+      window.addEventListener("resize", syncControls);
+      syncControls();
     }
   </script>
 </body>

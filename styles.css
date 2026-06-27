@@ -494,36 +494,18 @@ img {
 }
 
 .table-scroll {
-  position: relative;
-  overflow: hidden;
-  overscroll-behavior-x: contain;
-  touch-action: pan-y;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
   -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-user-drag: none;
   cursor: grab;
   border-radius: 18px;
   border: 1px solid rgba(19, 32, 51, 0.08);
   background: rgba(255, 255, 255, 0.82);
 }
 
-.table-gesture-layer {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  touch-action: none;
-  background: transparent;
-}
-
 .table-width {
   min-width: 100%;
-  pointer-events: none;
-  position: relative;
-  z-index: 1;
-  transform: translate3d(0, 0, 0);
-  will-change: transform;
 }
 
 .table-width-zero-shot {
@@ -548,35 +530,10 @@ img {
   border-radius: 999px;
 }
 
-.table-scroll.is-dragging {
-  cursor: grabbing;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
 .table-controls {
   display: none;
   gap: 10px;
   margin: 12px 0 14px;
-}
-
-.table-debug-overlay {
-  position: fixed;
-  right: 16px;
-  bottom: 16px;
-  z-index: 9999;
-  max-width: min(280px, calc(100vw - 32px));
-  padding: 10px 12px;
-  border: 1px solid rgba(111, 59, 194, 0.26);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.94);
-  color: var(--violet);
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  box-shadow: 0 12px 30px rgba(19, 32, 51, 0.14);
-  pointer-events: none;
-  opacity: 0.95;
 }
 
 .table-scroll-hint {
@@ -791,8 +748,9 @@ img {
   }
 
   .table-scroll {
-    position: relative;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
   }
 
   .table-scroll::-webkit-scrollbar {
